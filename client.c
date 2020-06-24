@@ -15,27 +15,27 @@
 
 int main(int argc, char* argv[])
 { 
-	int sockfd;
-	char buffer[BUF_SIZE]; 
+    int sockfd;
+    char buffer[BUF_SIZE]; 
     char *filename;
-	struct sockaddr_in	 servaddr; 
+    struct sockaddr_in	 servaddr; 
 
-	// Create socket.
-	if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0 ) { 
-		perror("socket creation failed"); 
-		exit(EXIT_FAILURE); 
-	} 
+    // Create socket.
+    if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0 ) { 
+        perror("socket creation failed"); 
+        exit(EXIT_FAILURE); 
+    } 
 
-	// Server address.
-	memset(&servaddr, 0, sizeof(servaddr)); 
-	servaddr.sin_family = AF_INET; 
+    // Server address.
+    memset(&servaddr, 0, sizeof(servaddr)); 
+    servaddr.sin_family = AF_INET; 
     servaddr.sin_port = htons(PORT);
     inet_aton(IP, &(servaddr.sin_addr));
 
     // Connecto to the eportero server.
     connect(sockfd, (struct sockaddr*) &servaddr, sizeof(servaddr));
-	
-	int n;
+    
+    int n;
     printf("Connected to server %s:%d ...\n", inet_ntoa(servaddr.sin_addr), 
             ntohs(servaddr.sin_port));
 
