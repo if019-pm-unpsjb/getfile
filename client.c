@@ -57,9 +57,12 @@ int main(int argc, char* argv[])
         printf("Sended %s (%d bytes) to %s:%d ...\n", filename, n,
                 inet_ntoa(servaddr.sin_addr), ntohs(servaddr.sin_port));
 
-        // If the server send back 1 the file is found.
+        int filesize = 0;
+
+        // If the server send back the size the file is found.
         recv(sockfd, buffer, BUF_SIZE, 0);
-        if (atoi(buffer) == 0) {
+        filesize = atoi(buffer);
+        if (filesize == 0) {
             printf("File not found in the server.\n");
             continue;
         }
@@ -76,7 +79,7 @@ int main(int argc, char* argv[])
         while ((br = recv(sockfd, buffer, BUF_SIZE, 0)) > 0) {
             bcount += br;
             write(fd, buffer, br);
-            if (br < BUF_SIZE) {
+            if (bcount == filesize) {
                 break;
             }
         }

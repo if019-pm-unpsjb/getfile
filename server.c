@@ -116,7 +116,9 @@ static void* handle_request_tcp(void* s)
             send(sock, buf, strlen(buf), 0);
             continue;
         } else {
-            sprintf(buf, "1");
+            struct stat fileinfo;
+            fstat(fd, &fileinfo);
+            sprintf(buf, "%ld", fileinfo.st_size);
             send(sock, buf, strlen(buf), 0);
         }
 
