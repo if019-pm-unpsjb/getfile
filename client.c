@@ -89,6 +89,6 @@ int main(int argc, char* argv[])
         free(filename);
     } while (buffer[0] != '\n');
 
-	close(sockfd); 
-	return 0; 
+    close(sockfd); 
+    return 0; 
 }
