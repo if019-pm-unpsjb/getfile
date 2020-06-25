@@ -108,23 +108,27 @@ static void* handle_request_tcp(void* s)
         filename = (char*) malloc(strlen(buf) + 1);
         strncpy(filename, buf, strlen(buf) + 1);
 
+        off_t filesize;
+
         int fd = open(filename, O_RDONLY);
         if (fd < 0) {
             sprintf(buf, "[%d] %s", id, filename);
             perror(buf);
-            sprintf(buf, "0");
-            send(sock, buf, strlen(buf), 0);
+            filesize = htonl(0);
+            send(sock, (void*) &filesize, sizeof(filesize), 0);
             continue;
         } else {
             struct stat fileinfo;
             fstat(fd, &fileinfo);
             sprintf(buf, "%ld", fileinfo.st_size);
-            send(sock, buf, strlen(buf), 0);
+            filesize = htonl(fileinfo.st_size);
+            send(sock, (void*) &filesize, sizeof(filesize), 0);
         }
 
-        int bs, scount;
+        int bs, scount = 0;
         while ((bs = sendfile(sock, fd, NULL, BUF_SIZE)) > 0) {
             scount += bs;
+            printf("[%d] sended %d bytes ...\n", id, bs);
         }
 
         if (bs != -1) {
