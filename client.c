@@ -34,7 +34,7 @@ int main(int argc, char* argv[])
 
     // Connecto to the eportero server.
     connect(sockfd, (struct sockaddr*) &servaddr, sizeof(servaddr));
-    
+
     int n;
     printf("Connected to server %s:%d ...\n", inet_ntoa(servaddr.sin_addr), 
             ntohs(servaddr.sin_port));
@@ -57,31 +57,40 @@ int main(int argc, char* argv[])
         printf("Sended %s (%d bytes) to %s:%d ...\n", filename, n,
                 inet_ntoa(servaddr.sin_addr), ntohs(servaddr.sin_port));
 
-        int filesize = 0;
+        off_t filesize = 0;
+        int br;
 
         // If the server send back the size the file is found.
-        recv(sockfd, buffer, BUF_SIZE, 0);
-        filesize = atoi(buffer);
+        recv(sockfd, &filesize, sizeof(filesize), 0);
+        filesize = ntohl(filesize);
         if (filesize == 0) {
             printf("File not found in the server.\n");
             continue;
+        } else {
+            printf("File %s found (%ld bytes).\n", filename, filesize);
         }
 
+
         int fd;
-        fd = open(filename, O_CREAT | O_TRUNC | O_WRONLY, 0644);
+        int flags = S_IWUSR | S_IRUSR | S_IRGRP | S_IROTH;
+        fd = open(filename, O_CREAT | O_TRUNC | O_WRONLY, flags);
         if (fd < 0) {
             perror("open");
             continue;
         }
 
-        int br;
         int bcount = 0;
         while ((br = recv(sockfd, buffer, BUF_SIZE, 0)) > 0) {
             bcount += br;
+            printf("Retrieved %d bytes...\n", br);
             write(fd, buffer, br);
             if (bcount == filesize) {
                 break;
             }
+        }
+
+        if (br == -1) {
+            perror("recv");
         }
 
         printf("File received: %s (%d bytes).\n", filename, bcount);
