@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
         recv(sockfd, &filesize, sizeof(filesize), 0);
         filesize = ntohl(filesize);
         if (filesize == 0) {
-            printf("File not found in the server.\n");
+            printf("%s: file not found in the server.\n", filename);
             continue;
         } else {
             printf("File %s found (%ld bytes).\n", filename, filesize);
