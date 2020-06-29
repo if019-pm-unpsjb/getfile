@@ -77,16 +77,16 @@ static void* handle_request_tcp(void* s)
 {
     static __thread int id = 0;
     static __thread int sock = 0;
-    id = thread_id;
 
     char buf[BUF_SIZE];
     char *filename;
     ssize_t n;
 
-    sock = *((int*) s);
-
     struct sockaddr_in remote;
     struct sockaddr_in local;
+
+    sock = *((int*) s);
+    id = thread_id;
 
     socklen_t size = sizeof(struct sockaddr_in);
     if (getpeername(sock, (struct sockaddr*) &remote, &size) == -1) {
